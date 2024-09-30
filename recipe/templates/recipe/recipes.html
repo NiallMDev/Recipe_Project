@@ -1,0 +1,77 @@
+{% extends "recipe/base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+
+    <!-- Search Form -->
+    <form method="get" action="" class="mb-4">
+        <div class="input-group col-6 mx-auto">
+            <input type="text" name="search" class="form-control" placeholder="Search for recipes..." value="{{ request.GET.search }}">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Add Recipe Form -->
+    <form class="col-6 mx-auto card p-3 shadow-lg" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h2 class="text-center"> My Recipes </h2>
+        <br>
+        <h3>Add Recipe</h3>
+        <hr>
+        <div class="form-group">
+            <label>Recipe name</label>
+            <input name="recipe_name" type="text" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label>Recipe description</label>
+            <textarea name="recipe_description" class="form-control" required></textarea>
+        </div>
+        <div class="form-group">
+            <label>Recipe Image</label>
+            <input name="recipe_image" type="file" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-success">Add Recipe</button>   
+    </form>
+
+    <div class="container mt-5">
+        <!-- Display Recipes -->
+        <div class="mt-5">
+            <h3>Recipes</h3>
+            <hr>
+            {% if recipes %}
+                <div class="row">
+                    {% for recipe in recipes %}
+                        <div class="col-md-4">
+                            <div class="card mb-4 shadow-sm">
+                                <!-- Handle missing images by showing a placeholder -->
+                                {% load static %}
+                                <img src="{% if recipe.recipe_image %}{{ recipe.recipe_image.url }}{% else %}{% static 'images/placeholder.jpg' %}{% endif %}" class="card-img-top" alt="{{ recipe.recipe_name }}">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ recipe.recipe_name }}</h5>
+                                    <p class="card-text">{{ recipe.recipe_description }}</p>
+                                    <!-- Icon section -->
+                                    <div class="d-flex justify-content-between">
+                                        <!-- Pen icon as update button -->
+                                        <button type="button" onclick="location.href='{% url 'update_recipe' recipe.id %}';" class="btn btn-link p-0 text-primary">
+                                            <i class="bi bi-pen"></i>
+                                        </button>
+                                        
+                                        <!-- Trash icon as delete button -->
+                                        <button type="button" onclick="location.href='{% url 'delete_recipe' recipe.id %}';" class="btn btn-link p-0 text-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No recipes found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}
